@@ -1,0 +1,122 @@
+class Stack:
+    """A Stack implemented from scratch using a Python list.
+
+    The top of the stack is the end of the list.
+    """
+
+    def __init__(self):
+        self.__items = []
+
+    def push(self, item):
+        """Add an item to the top of the stack."""
+        self.__items.append(item)
+
+    def pop(self):
+        """Remove and return the top item, or None if the stack is empty."""
+        if self.__items:
+            return self.__items.pop()
+        return None
+
+    def peek(self):
+        """Return the top item without removing it, or None if empty."""
+        if self.__items:
+            return self.__items[-1]
+        return None
+
+    @property
+    def is_empty(self):
+        """True when the stack has no items."""
+        return len(self.__items) == 0
+
+    @property
+    def size(self):
+        """Number of items in the stack."""
+        return len(self.__items)
+
+    def __len__(self):
+        return len(self.__items)
+
+
+class EvaluateExpression:
+    """Evaluates a math expression written in infix notation.
+
+    Uses two Stacks (operands and operators) and operator precedence
+    to compute the result, e.g. EvaluateExpression("(1 + 2) * 3").evaluate() == 9.
+    """
+
+    valid_char = "0123456789+-*/() "
+    operators = "+-*/()"
+    precedence = {"(": 1, "+": 2, "-": 2, "*": 3, "/": 3}
+
+    def __init__(self, string=""):
+        self.expression = string
+
+    @property
+    def expression(self):
+        return self.expr
+
+    @expression.setter
+    def expression(self, new_expr):
+        if new_expr and all(char in self.valid_char for char in new_expr):
+            self.expr = new_expr
+        else:
+            self.expr = ""
+
+    def insert_space(self):
+        """Return the expression with every operator padded by spaces."""
+        result = ""
+        for char in self.expr:
+            if char in self.operators:
+                result += f" {char} "
+            else:
+                result += char
+        return result
+
+    def process_operator(self, operand_stack, operator_stack):
+        """Pop one operator and two operands, apply the operator,
+        and push the result back onto the operand stack."""
+        operator = operator_stack.pop()
+        right = operand_stack.pop()
+        left = operand_stack.pop()
+        if operator == "+":
+            result = left + right
+        elif operator == "-":
+            result = left - right
+        elif operator == "*":
+            result = left * right
+        elif operator == "/":
+            result = left // right
+        operand_stack.push(result)
+
+    def evaluate(self):
+        """Evaluate the infix expression and return the result as an int."""
+        operand_stack = Stack()
+        operator_stack = Stack()
+        expression = self.insert_space()
+        tokens = expression.split()
+
+        for token in tokens:
+            if token.isdigit():
+                operand_stack.push(int(token))
+            elif token in "+-":
+                while (not operator_stack.is_empty
+                       and operator_stack.peek() != "("):
+                    self.process_operator(operand_stack, operator_stack)
+                operator_stack.push(token)
+            elif token in "*/":
+                while (not operator_stack.is_empty
+                       and self.precedence[operator_stack.peek()]
+                       >= self.precedence[token]):
+                    self.process_operator(operand_stack, operator_stack)
+                operator_stack.push(token)
+            elif token == "(":
+                operator_stack.push(token)
+            elif token == ")":
+                while operator_stack.peek() != "(":
+                    self.process_operator(operand_stack, operator_stack)
+                operator_stack.pop()
+
+        while not operator_stack.is_empty:
+            self.process_operator(operand_stack, operator_stack)
+
+        return operand_stack.pop()
