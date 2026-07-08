@@ -1,26 +1,25 @@
-"""Improved version of the Questions page (Exercise 3).
-
-User Experience improvements over pages/2_Questions.py:
-- Live validation of the math expression with a clear error message
-  instead of a raw Streamlit exception on invalid input.
-- A preview of the computed answer before the question is created,
-  so the creator can catch typos in the expression.
-- Required-field feedback: warns when no expression is entered or no
-  recipient is selected, instead of silently writing bad rows.
-- Success confirmation showing exactly who received the challenge.
-- Questions list is searchable and shown with friendly column names.
-
-Code Quality improvements:
-- All Excel access goes through two helper functions (load_sheet /
-  save_sheets) instead of repeated read/write boilerplate.
-- Constants for the filename and sheet names — no magic strings.
-- Small single-purpose functions with docstrings instead of one long
-  script, which makes the page unit-testable.
-- No duplicated evaluation logic: validation and answer preview reuse
-  the same safe_evaluate() helper.
-
-See DESIGN.md for the metrics, Pugh chart and full design process.
-"""
+# Improved version of the Questions page (Exercise 3).
+#
+# User Experience improvements over pages/2_Questions.py:
+# - Live validation of the math expression with a clear error message
+#   instead of a raw Streamlit exception on invalid input.
+# - A preview of the computed answer before the question is created,
+#   so the creator can catch typos in the expression.
+# - Required-field feedback: warns when no expression is entered or no
+#   recipient is selected, instead of silently writing bad rows.
+# - Success confirmation showing exactly who received the challenge.
+# - Questions list is searchable and shown with friendly column names.
+#
+# Code Quality improvements:
+# - All Excel access goes through two helper functions (load_sheet /
+#   save_sheets) instead of repeated read/write boilerplate.
+# - Constants for the filename and sheet names — no magic strings.
+# - Small single-purpose functions with docstrings instead of one long
+#   script, which makes the page unit-testable.
+# - No duplicated evaluation logic: validation and answer preview reuse
+#   the same safe_evaluate() helper.
+#
+# See DESIGN.md for the metrics, Pugh chart and full design process.
 
 import streamlit as st
 import pandas as pd
@@ -35,22 +34,20 @@ SHEET_ASSOC = "Challenge-Users"
 
 
 def load_sheet(sheet_name):
-    """Read one worksheet of the app database into a DataFrame."""
+    # Read one worksheet of the app database into a DataFrame.
     return pd.read_excel(FILENAME, sheet_name=sheet_name)
 
 
 def save_sheets(sheets):
-    """Write {sheet_name: DataFrame} back to the Excel database."""
+    # Write {sheet_name: DataFrame} back to the Excel database.
     with pd.ExcelWriter(FILENAME, mode="a", if_sheet_exists="replace") as f:
         for sheet_name, data in sheets.items():
             data.to_excel(f, sheet_name=sheet_name, index=False)
 
 
 def safe_evaluate(expression):
-    """Evaluate an infix expression.
-
-    Returns (answer, error_message). Exactly one of the two is None.
-    """
+    # Evaluate an infix expression.
+    # Returns (answer, error_message). Exactly one of the two is None.
     if not expression.strip():
         return None, "Please enter a math expression."
     evaluator = EvaluateExpression(expression)
@@ -68,7 +65,7 @@ def safe_evaluate(expression):
 
 
 def create_question(expression, answer, selected_users, users):
-    """Append the new question, challenge and recipient rows, then save."""
+    # Append the new question, challenge and recipient rows, then save.
     question_data = load_sheet(SHEET_QUESTIONS)
     challenge_data = load_sheet(SHEET_CHALLENGES)
     assoc_data = load_sheet(SHEET_ASSOC)
@@ -89,7 +86,7 @@ def create_question(expression, answer, selected_users, users):
 
 
 def show_questions_list(question_data):
-    """Display the existing questions with search and friendly headers."""
+    # Display the existing questions with search and friendly headers.
     st.header("Questions List")
     search = st.text_input("🔍 Search questions:",
                            placeholder="e.g. (1 + 2) * 3")
@@ -106,7 +103,7 @@ def show_questions_list(question_data):
 
 
 def show_create_form(users):
-    """Display the creation form with validation and answer preview."""
+    # Display the creation form with validation and answer preview.
     st.header("Create New Question")
     expression = st.text_input("Write a Math expression:",
                                placeholder="e.g. (1 + 2) * 3")

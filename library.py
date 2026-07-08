@@ -1,48 +1,45 @@
+# A Stack implemented from scratch using a Python list.
+# The top of the stack is the end of the list.
 class Stack:
-    """A Stack implemented from scratch using a Python list.
-
-    The top of the stack is the end of the list.
-    """
 
     def __init__(self):
         self.__items = []
 
     def push(self, item):
-        """Add an item to the top of the stack."""
+        # Add an item to the top of the stack.
         self.__items.append(item)
 
     def pop(self):
-        """Remove and return the top item, or None if the stack is empty."""
+        # Remove and return the top item, or None if the stack is empty.
         if self.__items:
             return self.__items.pop()
         return None
 
     def peek(self):
-        """Return the top item without removing it, or None if empty."""
+        # Return the top item without removing it, or None if empty.
         if self.__items:
             return self.__items[-1]
         return None
 
     @property
     def is_empty(self):
-        """True when the stack has no items."""
+        # True when the stack has no items.
         return len(self.__items) == 0
 
     @property
     def size(self):
-        """Number of items in the stack."""
+        # Number of items in the stack.
         return len(self.__items)
 
     def __len__(self):
         return len(self.__items)
 
 
+# Evaluates a math expression written in infix notation.
+#
+# Uses two Stacks (operands and operators) and operator precedence
+# to compute the result, e.g. EvaluateExpression("(1 + 2) * 3").evaluate() == 9.
 class EvaluateExpression:
-    """Evaluates a math expression written in infix notation.
-
-    Uses two Stacks (operands and operators) and operator precedence
-    to compute the result, e.g. EvaluateExpression("(1 + 2) * 3").evaluate() == 9.
-    """
 
     valid_char = "0123456789+-*/() "
     operators = "+-*/()"
@@ -63,7 +60,7 @@ class EvaluateExpression:
             self.expr = ""
 
     def insert_space(self):
-        """Return the expression with every operator padded by spaces."""
+        # Return the expression with every operator padded by spaces.
         result = ""
         for char in self.expr:
             if char in self.operators:
@@ -73,8 +70,8 @@ class EvaluateExpression:
         return result
 
     def process_operator(self, operand_stack, operator_stack):
-        """Pop one operator and two operands, apply the operator,
-        and push the result back onto the operand stack."""
+        # Pop one operator and two operands, apply the operator,
+        # and push the result back onto the operand stack.
         operator = operator_stack.pop()
         right = operand_stack.pop()
         left = operand_stack.pop()
@@ -89,7 +86,7 @@ class EvaluateExpression:
         operand_stack.push(result)
 
     def evaluate(self):
-        """Evaluate the infix expression and return the result as an int."""
+        # Evaluate the infix expression and return the result as an int.
         operand_stack = Stack()
         operator_stack = Stack()
         expression = self.insert_space()
