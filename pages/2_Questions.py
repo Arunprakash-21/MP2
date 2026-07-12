@@ -12,7 +12,7 @@ st.title("Questions")
 question_data = pd.read_excel(filename, sheet_name="Questions")
 
 st.header("Questions List")
-st.write(question_data)
+st.dataframe(question_data, hide_index=True)
 
 st.header("Create New Question")
 with st.form("new_question"):
@@ -37,16 +37,16 @@ if submit:
     challenge_data = pd.read_excel(filename, sheet_name="Challenges")
     assoc_data = pd.read_excel(filename, sheet_name="Challenge-Users")
 
-    question_id = len(question_data)
-    challenge_id = len(challenge_data)
-    assoc_id = len(assoc_data)
+    question_id = int(question_data["id"].max()) + 1 if not question_data.empty else 1
+    challenge_id = int(challenge_data["id"].max()) + 1 if not challenge_data.empty else 1
+    assoc_id = int(assoc_data["id"].max()) + 1 if not assoc_data.empty else 1
 
-    question_data.loc[question_id] = [question_id, expression, answer]
-    challenge_data.loc[challenge_id] = [challenge_id, question_id]
+    question_data.loc[len(question_data)] = [question_id, expression, answer]
+    challenge_data.loc[len(challenge_data)] = [challenge_id, question_id]
 
     for user in selected_users:
         user_id = int(users.loc[users["username"] == user, "id"].iloc[0])
-        assoc_data.loc[assoc_id] = [assoc_id, challenge_id, user_id]
+        assoc_data.loc[len(assoc_data)] = [assoc_id, challenge_id, user_id]
         assoc_id += 1
 
     # Task 5: update the Excel file with the new data

@@ -1,34 +1,28 @@
-# A Stack implemented from scratch using a Python list.
-# The top of the stack is the end of the list.
+# A Stack implemented from Week 4 OOP Problem Set
 class Stack:
 
     def __init__(self):
         self.__items = []
 
     def push(self, item):
-        # Add an item to the top of the stack.
         self.__items.append(item)
 
     def pop(self):
-        # Remove and return the top item, or None if the stack is empty.
         if self.__items:
             return self.__items.pop()
         return None
 
     def peek(self):
-        # Return the top item without removing it, or None if empty.
         if self.__items:
             return self.__items[-1]
         return None
 
     @property
     def is_empty(self):
-        # True when the stack has no items.
         return len(self.__items) == 0
 
     @property
     def size(self):
-        # Number of items in the stack.
         return len(self.__items)
 
     def __len__(self):
@@ -36,7 +30,6 @@ class Stack:
 
 
 # Evaluates a math expression written in infix notation.
-#
 # Uses two Stacks (operands and operators) and operator precedence
 # to compute the result, e.g. EvaluateExpression("(1 + 2) * 3").evaluate() == 9.
 class EvaluateExpression:

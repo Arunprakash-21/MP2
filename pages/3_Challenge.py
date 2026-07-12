@@ -59,14 +59,21 @@ for _, row in my_challenges.iterrows():
     if st.session_state.get(show_key, False):
         st.subheader(f"Question: {expression}")
         with st.form(f"answer_{assoc_id}"):
-            user_answer = st.number_input("Your answer:", step=1,
-                                          key=f"answer_input_{assoc_id}")
+            user_answer = st.text_input("Your answer:",
+                                        key=f"answer_input_{assoc_id}")
             submit = st.form_submit_button("Submit Answer")
 
         if submit:
-            if int(user_answer) == correct_answer:
+            stripped = user_answer.strip()
+            if not stripped:
+                st.error("Please enter an answer.")
+            elif not stripped.lstrip("-").isdigit():
+                st.error("Please enter a whole number.")
+            elif int(stripped) == correct_answer:
                 elapsed = time.time() - st.session_state[start_key]
-                time_data.loc[len(time_data)] = [len(time_data),
+                new_time_id = (int(time_data["id"].max()) + 1
+                              if not time_data.empty else 1)
+                time_data.loc[len(time_data)] = [new_time_id,
                                                  assoc_id, elapsed]
                 with pd.ExcelWriter(filename, mode='a',
                                     if_sheet_exists='replace') as f:

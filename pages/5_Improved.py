@@ -70,15 +70,15 @@ def create_question(expression, answer, selected_users, users):
     challenge_data = load_sheet(SHEET_CHALLENGES)
     assoc_data = load_sheet(SHEET_ASSOC)
 
-    question_id = len(question_data)
-    challenge_id = len(challenge_data)
-    question_data.loc[question_id] = [question_id, expression, answer]
-    challenge_data.loc[challenge_id] = [challenge_id, question_id]
+    question_id = int(question_data["id"].max()) + 1 if not question_data.empty else 1
+    challenge_id = int(challenge_data["id"].max()) + 1 if not challenge_data.empty else 1
+    question_data.loc[len(question_data)] = [question_id, expression, answer]
+    challenge_data.loc[len(challenge_data)] = [challenge_id, question_id]
 
     for user in selected_users:
         user_id = int(users.loc[users["username"] == user, "id"].iloc[0])
-        assoc_data.loc[len(assoc_data)] = [len(assoc_data),
-                                           challenge_id, user_id]
+        assoc_id = int(assoc_data["id"].max()) + 1 if not assoc_data.empty else 1
+        assoc_data.loc[len(assoc_data)] = [assoc_id, challenge_id, user_id]
 
     save_sheets({SHEET_QUESTIONS: question_data,
                  SHEET_CHALLENGES: challenge_data,
