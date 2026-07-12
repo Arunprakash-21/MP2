@@ -39,23 +39,33 @@ class EvaluateExpression:
     precedence = {"(": 1, "+": 2, "-": 2, "*": 3, "/": 3}
 
     def __init__(self, string=""):
-        self.expression = string
+        if isinstance(string, str) and self.is_valid(string):
+            self._expression = string
+        else:
+            self._expression = ""
+
+    def is_valid(self, string):
+        # True only if every character is an allowed character.
+        for char in string:
+            if char not in self.valid_char:
+                return False
+        return True
 
     @property
     def expression(self):
-        return self.expr
+        return self._expression
 
     @expression.setter
     def expression(self, new_expr):
-        if new_expr and all(char in self.valid_char for char in new_expr):
-            self.expr = new_expr
+        if new_expr and self.is_valid(new_expr):
+            self._expression = new_expr
         else:
-            self.expr = ""
+            self._expression = ""
 
     def insert_space(self):
         # Return the expression with every operator padded by spaces.
         result = ""
-        for char in self.expr:
+        for char in self._expression:
             if char in self.operators:
                 result += f" {char} "
             else:
