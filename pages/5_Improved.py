@@ -52,15 +52,17 @@ def safe_evaluate(expression):
         return None, "Please enter a math expression."
     evaluator = EvaluateExpression(expression)
     if evaluator.expression == "":
-        return None, ("The expression contains invalid characters. "
-                      "Only digits, + - * / ( ) and spaces are allowed.")
+        return None, ("The expression contains invalid characters. Only "
+                      "digits, . + - * / ( ) and spaces are allowed.")
     try:
         answer = evaluator.evaluate()
     except (ZeroDivisionError, TypeError, IndexError):
         return None, ("The expression could not be evaluated. "
                       "Check for division by zero or unbalanced brackets.")
+    # Negative numbers and decimals now evaluate; an unbalanced expression
+    # (e.g. "(1 + 2") returns None instead of a value.
     if answer is None:
-        return None, "The expression is incomplete."
+        return None, "The expression is incomplete or has unbalanced brackets."
     return answer, None
 
 

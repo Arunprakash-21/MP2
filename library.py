@@ -34,7 +34,7 @@ class Stack:
 # to compute the result, e.g. EvaluateExpression("(1 + 2) * 3").evaluate() == 9.
 class EvaluateExpression:
 
-    valid_char = "0123456789+-*/() "
+    valid_char = "0123456789.+-*/() "
     operators = "+-*/()"
     precedence = {"(": 1, "+": 2, "-": 2, "*": 3, "/": 3}
 
@@ -72,6 +72,41 @@ class EvaluateExpression:
                 result += char
         return result
 
+    def is_number(self, token):
+        # True if the token is a number (may be signed or have a decimal).
+        try:
+            float(token)
+            return True
+        except ValueError:
+            return False
+
+    def to_number(self, token):
+        # Convert a number token to an int when whole, otherwise a float.
+        if "." in token:
+            return float(token)
+        return int(token)
+
+    def merge_signs(self, tokens):
+        # Turn a unary +/- (a sign, not subtraction) into part of the number
+        # that follows it, e.g. ['2', '*', '-', '3'] -> ['2', '*', '-3'].
+        # A +/- is unary when it starts the expression or follows another
+        # operator or an opening bracket.
+        merged = []
+        i = 0
+        while i < len(tokens):
+            token = tokens[i]
+            is_sign = token in "+-"
+            unary_position = not merged or merged[-1] in "+-*/("
+            has_next_number = (i + 1 < len(tokens)
+                               and self.is_number(tokens[i + 1]))
+            if is_sign and unary_position and has_next_number:
+                merged.append(token + tokens[i + 1])
+                i += 2
+            else:
+                merged.append(token)
+                i += 1
+        return merged
+
     def process_operator(self, operand_stack, operator_stack):
         # Pop one operator and two operands, apply the operator,
         # and push the result back onto the operand stack.
@@ -85,19 +120,20 @@ class EvaluateExpression:
         elif operator == "*":
             result = left * right
         elif operator == "/":
-            result = left // right
+            result = left / right
         operand_stack.push(result)
 
     def evaluate(self):
-        # Evaluate the infix expression and return the result as an int.
+        # Evaluate the infix expression. Returns an int when the result is a
+        # whole number, otherwise a float; returns None for an empty
+        # expression or one with unbalanced brackets.
         operand_stack = Stack()
         operator_stack = Stack()
-        expression = self.insert_space()
-        tokens = expression.split()
+        tokens = self.merge_signs(self.insert_space().split())
 
         for token in tokens:
-            if token.isdigit():
-                operand_stack.push(int(token))
+            if self.is_number(token):
+                operand_stack.push(self.to_number(token))
             elif token in "+-":
                 while (not operator_stack.is_empty
                        and operator_stack.peek() != "("):
@@ -105,6 +141,7 @@ class EvaluateExpression:
                 operator_stack.push(token)
             elif token in "*/":
                 while (not operator_stack.is_empty
+                       and operator_stack.peek() != "("
                        and self.precedence[operator_stack.peek()]
                        >= self.precedence[token]):
                     self.process_operator(operand_stack, operator_stack)
@@ -112,11 +149,19 @@ class EvaluateExpression:
             elif token == "(":
                 operator_stack.push(token)
             elif token == ")":
-                while operator_stack.peek() != "(":
+                while (not operator_stack.is_empty
+                       and operator_stack.peek() != "("):
                     self.process_operator(operand_stack, operator_stack)
+                if operator_stack.is_empty:
+                    return None  # unmatched ')'
                 operator_stack.pop()
 
         while not operator_stack.is_empty:
+            if operator_stack.peek() == "(":
+                return None  # unmatched '('
             self.process_operator(operand_stack, operator_stack)
 
-        return operand_stack.pop()
+        result = operand_stack.pop()
+        if isinstance(result, float) and result.is_integer():
+            return int(result)
+        return result

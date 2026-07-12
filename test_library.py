@@ -39,3 +39,23 @@ def test_evaluate():
     assert EvaluateExpression("(1 + 2) * 4 - 3").evaluate() == 9
     assert EvaluateExpression("(6 + 2) / 4").evaluate() == 2
     assert EvaluateExpression("((1 + 2) * 3 - 4) / 5 + 10").evaluate() == 11
+
+
+def test_evaluate_negative_numbers():
+    assert EvaluateExpression("-4 + 5").evaluate() == 1
+    assert EvaluateExpression("3 + -2").evaluate() == 1
+    assert EvaluateExpression("2 * -3").evaluate() == -6
+    assert EvaluateExpression("(-4)").evaluate() == -4
+    assert EvaluateExpression("-2 * -3").evaluate() == 6
+
+
+def test_evaluate_floats():
+    assert EvaluateExpression("1.5 + 2").evaluate() == 3.5
+    assert EvaluateExpression("7 / 2").evaluate() == 3.5
+    assert EvaluateExpression("10 / 4").evaluate() == 2.5
+    assert EvaluateExpression("0.5 * 4").evaluate() == 2
+
+
+def test_evaluate_unbalanced_brackets_returns_none():
+    assert EvaluateExpression("(1 + 2").evaluate() is None
+    assert EvaluateExpression("1 + 2)").evaluate() is None
