@@ -18,8 +18,6 @@
 #   script, which makes the page unit-testable.
 # - No duplicated evaluation logic: validation and answer preview reuse
 #   the same safe_evaluate() helper.
-#
-# See DESIGN.md for the metrics, Pugh chart and full design process.
 
 import streamlit as st
 import pandas as pd

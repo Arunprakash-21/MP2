@@ -17,7 +17,6 @@ pages/
   3_Challenge.py                         # Attempt challenges with a timer
   4_Hall_of_Fame.py                      # Top-3 ranking per challenge
   5_Improved.py                          # Improved Questions page (Exercise 3)
-DESIGN.md                                # Exercise 3 design process, metrics, Pugh chart
 Pipfile                                  # pipenv environment (Python 3.12)
 ```
 
@@ -58,7 +57,7 @@ Then open http://localhost:8501.
 4. **Hall of Fame** — every challenge with its question, correct answer and
    the top three fastest users.
 5. **Questions (Improved)** — Exercise 3 version of the Questions page
-   (see [DESIGN.md](DESIGN.md)).
+   
 
 ## Running the Tests
 
