@@ -1,3 +1,4 @@
+import math
 import time
 
 import streamlit as st
@@ -40,7 +41,7 @@ for _, row in my_challenges.iterrows():
                  "can't be answered. Ask the creator to fix it.")
         continue
 
-    correct_answer = int(raw_answer)
+    correct_answer = float(raw_answer)
 
     show_key = f"show_{assoc_id}"
     start_key = f"start_{assoc_id}"
@@ -73,15 +74,15 @@ for _, row in my_challenges.iterrows():
         if submit:
             stripped = user_answer.strip()
             try:
-                parsed_answer = int(stripped) if stripped else None
+                parsed_answer = float(stripped) if stripped else None
             except ValueError:
                 parsed_answer = None
 
             if not stripped:
                 st.error("Please enter an answer.")
             elif parsed_answer is None:
-                st.error("Please enter a whole number.")
-            elif parsed_answer == correct_answer:
+                st.error("Please enter a valid number.")
+            elif math.isclose(parsed_answer, correct_answer, abs_tol=1e-9):
                 elapsed = time.time() - st.session_state[start_key]
                 new_time_id = (int(time_data["id"].max()) + 1
                               if not time_data.empty else 1)
