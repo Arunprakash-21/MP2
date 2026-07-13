@@ -1,0 +1,3 @@
+[server]
+folderWatchBlacklist = [".venv", "__pycache__", ".pytest_cache"]
+fileWatcherType = "poll"

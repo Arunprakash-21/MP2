@@ -25,13 +25,17 @@ with st.form("new_question"):
 
     # Task 3: call the evaluate() method of the EvaluateExpression object
     # and store it
-    answer = evaluator.evaluate()
+    answer = evaluator.evaluate() if evaluator.expression else None
 
     selected_users = st.multiselect("Select Users to answer this challenge.",
                                     users["username"])
     submit = st.form_submit_button("Create Question")
 
-if submit:
+if submit and (not expression.strip() or evaluator.expression == ""
+              or answer is None):
+    st.error("Please enter a valid math expression (digits, + - * / ( ) "
+             "and spaces only, with balanced brackets).")
+elif submit:
     # Task 4: read Challenges and Challenge-Users tables
     # from the Excel file to update
     challenge_data = pd.read_excel(filename, sheet_name="Challenges")

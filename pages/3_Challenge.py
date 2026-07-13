@@ -33,7 +33,14 @@ for _, row in my_challenges.iterrows():
         challenge_data["id"] == challenge_id, "question_id"].iloc[0])
     question = question_data.loc[question_data["id"] == question_id]
     expression = question["expression"].iloc[0]
-    correct_answer = int(question["answer"].iloc[0])
+    raw_answer = question["answer"].iloc[0]
+
+    if pd.isna(raw_answer):
+        st.error(f"Challenge {challenge_id} has an invalid question and "
+                 "can't be answered. Ask the creator to fix it.")
+        continue
+
+    correct_answer = int(raw_answer)
 
     show_key = f"show_{assoc_id}"
     start_key = f"start_{assoc_id}"
@@ -65,11 +72,16 @@ for _, row in my_challenges.iterrows():
 
         if submit:
             stripped = user_answer.strip()
+            try:
+                parsed_answer = int(stripped) if stripped else None
+            except ValueError:
+                parsed_answer = None
+
             if not stripped:
                 st.error("Please enter an answer.")
-            elif not stripped.lstrip("-").isdigit():
+            elif parsed_answer is None:
                 st.error("Please enter a whole number.")
-            elif int(stripped) == correct_answer:
+            elif parsed_answer == correct_answer:
                 elapsed = time.time() - st.session_state[start_key]
                 new_time_id = (int(time_data["id"].max()) + 1
                               if not time_data.empty else 1)
